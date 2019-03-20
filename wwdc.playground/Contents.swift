@@ -15,6 +15,8 @@ class GameScene: SKScene {
     
     // Game
     var inGame: Bool = false
+    var tapIcon: SKSpriteNode!
+    
     
     override func didMove(to view: SKView) {
         setScreenSize()
@@ -27,13 +29,16 @@ class GameScene: SKScene {
     }
     
     func setPlayNode() {
-        let playTexture = SKTexture(imageNamed: "play.png")
+        let playTexture = SKTexture(imageNamed: "playButton.png")
         playNode = SKSpriteNode(texture: playTexture)
         playNode.name = "playNode"
         
-        playNode.size = CGSize(width: myWidth/4, height: myHeight/4)
-        playNode.position = CGPoint(x: myWidth/2, y: myHeight/2)
-        addChild(playNode)
+        let newWidth = myWidth * 2/5
+        let newHeight = playNode.size.height * (newWidth / playNode.size.width)
+        playNode.size = CGSize(width: newWidth, height: newHeight)
+//        playNode.size = CGSize(width: myWidth/4, height: myHeight/4)
+        playNode.position = CGPoint(x: myWidth/2, y: myHeight * 4/5)
+        self.addChild(playNode)
     }
     
     func tappedPlayButton() {
@@ -42,9 +47,25 @@ class GameScene: SKScene {
     }
     
     func gameStart() {
+        inGame = true
+        
         playNode.run(SKAction.fadeOut(withDuration: 0.3)) {
             self.playNode.removeFromParent()
+            
+            self.setGestures()
         }
+    }
+    
+    func setGestures() {
+        let tapTexture = SKTexture(imageNamed: "tapPicture.png")
+        tapIcon = SKSpriteNode(texture: tapTexture)
+        
+        let newWidth = myWidth * 1/5
+        let newHeight = tapIcon.size.height * (newWidth / tapIcon.size.width)
+        tapIcon.size = CGSize(width: newWidth, height: newHeight)
+        tapIcon.position = CGPoint(x: myWidth*1/6, y: myHeight/2)
+        tapIcon.alpha = 0.4
+        self.addChild(tapIcon)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -58,7 +79,14 @@ class GameScene: SKScene {
                     tappedPlayButton()
                 }
             }
+            return
         }
+        
+        // if is in game -----------------------------------------
+        tapIcon.run(SKAction.fadeAlpha(to: 1, duration: 0.2)) {
+            self.tapIcon.run(SKAction.fadeAlpha(to: 0.4, duration: 0.2))
+        }
+        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -76,7 +104,12 @@ class GameScene: SKScene {
                 playNode.run(SKAction.scale(to: 1, duration: 0.2))
             }
             playTouched = false
+            return
         }
+        
+        // if is in game -----------------------------------------
+        
+        
     }
 }
 
