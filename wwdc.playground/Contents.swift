@@ -21,12 +21,15 @@ class GameScene: SKScene {
     
     // Game
     var inGame: Bool = false
+    var gameText: SKLabelNode = SKLabelNode()
     
     override func didMove(to view: SKView) {
         setScreenSize()
         setPlayNode()
         setGestures()
     }
+    
+    
     
     func setScreenSize() {
         myWidth = self.size.width
@@ -50,14 +53,31 @@ class GameScene: SKScene {
         playTouched = true
     }
     
-    func gameStart() {
+    func setGame() {
         inGame = true
         
-        playNode.run(SKAction.fadeOut(withDuration: 0.3)) {
-            self.playNode.removeFromParent()
-            
-            // start game here
+        let actions: [SKAction] = [
+            SKAction.fadeOut(withDuration: 0.6),
+            SKAction.removeFromParent()
+        ]
+        
+        playNode.run(SKAction.sequence(actions))
+        tapIcon.run(SKAction.sequence(actions))
+        upIcon.run(SKAction.sequence(actions))
+        downIcon.run(SKAction.sequence(actions))
+        
+        self.run(SKAction.wait(forDuration: 0.7)) {
+            self.startGame()
         }
+    }
+    
+    func startGame() {
+        gameText.text = "follow the beat"
+        gameText.fontName = "Helvetica Neue"
+        gameText.fontSize = 30
+        gameText.fontColor = SKColor.black
+        gameText.position = CGPoint(x: myWidth/2, y: myHeight * 4/5)
+        self.addChild(gameText)
     }
     
     func setGestures() {
@@ -98,10 +118,35 @@ class GameScene: SKScene {
         let swipeDown : UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipedDown))
         swipeDown.direction = .down
         self.view!.addGestureRecognizer(swipeDown)
+        
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(GameScene.tapAction))
+        self.view!.addGestureRecognizer(tap)
+    }
+    
+    @objc func tapAction() {
+        if (inGame) {
+            // do sth
+            return
+        }
+        
+        if (!playTouched) {
+            self.tapAnimation()
+        }
+        else {
+            playNode.run(SKAction.scale(to: 1, duration: 0.2))
+            setGame()
+        }
     }
     
     @objc func swipedUp() {
+        if (inGame) {
+            // do sth
+            return
+        }
+        
         if (playTouched) {
+            playNode.run(SKAction.scale(to: 1, duration: 0.2))
+            playTouched = false
             return
         }
         
@@ -110,10 +155,18 @@ class GameScene: SKScene {
             SKAction.fadeAlpha(to: 0.2, duration: 0.2)
         ]
         upIcon.run(SKAction.sequence(actions))
+        self.run(SKAction.playSoundFileNamed("up.wav", waitForCompletion: false))
     }
     
     @objc func swipedDown() {
+        if (inGame) {
+            // do sth
+            return
+        }
+        
         if (playTouched) {
+            playNode.run(SKAction.scale(to: 1, duration: 0.2))
+            playTouched = false
             return
         }
         
@@ -122,6 +175,7 @@ class GameScene: SKScene {
             SKAction.fadeAlpha(to: 0.2, duration: 0.2)
         ]
         downIcon.run(SKAction.sequence(actions))
+        self.run(SKAction.playSoundFileNamed("down.wav", waitForCompletion: false))
     }
     
     func tapAnimation() {
@@ -130,6 +184,7 @@ class GameScene: SKScene {
             SKAction.fadeAlpha(to: 0.2, duration: 0.2)
         ]
         tapIcon.run(SKAction.sequence(actions))
+        self.run(SKAction.playSoundFileNamed("lol.wav", waitForCompletion: false))
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -148,8 +203,6 @@ class GameScene: SKScene {
         }
         
         // if is in game -----------------------------------------
-        
-        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -161,20 +214,17 @@ class GameScene: SKScene {
                 
                 for node in touchedNodes {
                     if (node.name == "playNode") {
-                        gameStart()
+                        setGame()
+                        return
                     }
                 }
                 playNode.run(SKAction.scale(to: 1, duration: 0.2))
             }
             playTouched = false
-            self.tapAnimation()
-            
             return
         }
         
         // if is in game -----------------------------------------
-        
-        
     }
 }
 

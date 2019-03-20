@@ -2,5 +2,10 @@
 <Timeline
    version = "3.0">
    <TimelineItems>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/stevenmuliamin/Desktop/wwdc2019/wwdc.playground#CharacterRangeLen=9&amp;CharacterRangeLoc=3947&amp;EndingColumnNumber=18&amp;EndingLineNumber=122&amp;StartingColumnNumber=9&amp;StartingLineNumber=122&amp;Timestamp=574797849.2817841"
+         selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
    </TimelineItems>
 </Timeline>
