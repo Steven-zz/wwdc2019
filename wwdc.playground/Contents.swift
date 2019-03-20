@@ -13,10 +13,11 @@ class GameScene: SKScene {
     var playNode: SKSpriteNode!
     var playTouched: Bool = false
     
-    // Gesture nodes
+    // Gesture
     var tapIcon: SKSpriteNode!
     var upIcon: SKSpriteNode!
     var downIcon: SKSpriteNode!
+    var isSwiped: Bool = false
     
     // Game
     var inGame: Bool = false
@@ -89,6 +90,38 @@ class GameScene: SKScene {
         downIcon.position = CGPoint(x: myWidth*9/12, y: myHeight * 2/5)
         downIcon.alpha = 0.2
         self.addChild(downIcon)
+        
+        let swipeUp : UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipedUp))
+        swipeUp.direction = .up
+        self.view!.addGestureRecognizer(swipeUp)
+        
+        let swipeDown : UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(GameScene.swipedDown))
+        swipeDown.direction = .down
+        self.view!.addGestureRecognizer(swipeDown)
+    }
+    
+    @objc func swipedUp() {
+        if (playTouched) {
+            return
+        }
+        
+        let actions: [SKAction] = [
+            SKAction.fadeAlpha(to: 1, duration: 0.2),
+            SKAction.fadeAlpha(to: 0.2, duration: 0.2)
+        ]
+        upIcon.run(SKAction.sequence(actions))
+    }
+    
+    @objc func swipedDown() {
+        if (playTouched) {
+            return
+        }
+        
+        let actions: [SKAction] = [
+            SKAction.fadeAlpha(to: 1, duration: 0.2),
+            SKAction.fadeAlpha(to: 0.2, duration: 0.2)
+        ]
+        downIcon.run(SKAction.sequence(actions))
     }
     
     func tapAnimation() {
@@ -111,8 +144,7 @@ class GameScene: SKScene {
                     return
                 }
             }
-            
-            tapAnimation()
+            return
         }
         
         // if is in game -----------------------------------------
@@ -135,6 +167,8 @@ class GameScene: SKScene {
                 playNode.run(SKAction.scale(to: 1, duration: 0.2))
             }
             playTouched = false
+            self.tapAnimation()
+            
             return
         }
         
