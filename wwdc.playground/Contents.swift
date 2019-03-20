@@ -13,14 +13,18 @@ class GameScene: SKScene {
     var playNode: SKSpriteNode!
     var playTouched: Bool = false
     
+    // Gesture nodes
+    var tapIcon: SKSpriteNode!
+    var upIcon: SKSpriteNode!
+    var downIcon: SKSpriteNode!
+    
     // Game
     var inGame: Bool = false
-    var tapIcon: SKSpriteNode!
-    
     
     override func didMove(to view: SKView) {
         setScreenSize()
         setPlayNode()
+        setGestures()
     }
     
     func setScreenSize() {
@@ -33,10 +37,9 @@ class GameScene: SKScene {
         playNode = SKSpriteNode(texture: playTexture)
         playNode.name = "playNode"
         
-        let newWidth = myWidth * 2/5
+        let newWidth = myWidth * 1/5
         let newHeight = playNode.size.height * (newWidth / playNode.size.width)
         playNode.size = CGSize(width: newWidth, height: newHeight)
-//        playNode.size = CGSize(width: myWidth/4, height: myHeight/4)
         playNode.position = CGPoint(x: myWidth/2, y: myHeight * 4/5)
         self.addChild(playNode)
     }
@@ -52,7 +55,7 @@ class GameScene: SKScene {
         playNode.run(SKAction.fadeOut(withDuration: 0.3)) {
             self.playNode.removeFromParent()
             
-            self.setGestures()
+            // start game here
         }
     }
     
@@ -60,12 +63,40 @@ class GameScene: SKScene {
         let tapTexture = SKTexture(imageNamed: "tapPicture.png")
         tapIcon = SKSpriteNode(texture: tapTexture)
         
-        let newWidth = myWidth * 1/5
-        let newHeight = tapIcon.size.height * (newWidth / tapIcon.size.width)
-        tapIcon.size = CGSize(width: newWidth, height: newHeight)
-        tapIcon.position = CGPoint(x: myWidth*1/6, y: myHeight/2)
-        tapIcon.alpha = 0.4
+        let tapWidth = myWidth * 1/6
+        let tapHeight = tapIcon.size.height * (tapWidth / tapIcon.size.width)
+        tapIcon.size = CGSize(width: tapWidth, height: tapHeight)
+        tapIcon.position = CGPoint(x: myWidth*3/12, y: myHeight * 2/5)
+        tapIcon.alpha = 0.2
         self.addChild(tapIcon)
+        
+        
+        let upTexture = SKTexture(imageNamed: "up.png")
+        upIcon = SKSpriteNode(texture: upTexture)
+        
+        let upHeight = tapHeight
+        let upWidth = upIcon.size.width * (tapHeight / upIcon.size.height)
+        upIcon.size = CGSize(width: upWidth, height: upHeight)
+        upIcon.position = CGPoint(x: myWidth*6/12, y: myHeight * 2/5)
+        upIcon.alpha = 0.2
+        self.addChild(upIcon)
+        
+        
+        let downTexture = SKTexture(imageNamed: "down.png")
+        downIcon = SKSpriteNode(texture: downTexture)
+        
+        downIcon.size = upIcon.size
+        downIcon.position = CGPoint(x: myWidth*9/12, y: myHeight * 2/5)
+        downIcon.alpha = 0.2
+        self.addChild(downIcon)
+    }
+    
+    func tapAnimation() {
+        let actions: [SKAction] = [
+            SKAction.fadeAlpha(to: 1, duration: 0.2),
+            SKAction.fadeAlpha(to: 0.2, duration: 0.2)
+        ]
+        tapIcon.run(SKAction.sequence(actions))
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -77,15 +108,15 @@ class GameScene: SKScene {
             for node in touchedNodes {
                 if (node.name == "playNode") {
                     tappedPlayButton()
+                    return
                 }
             }
-            return
+            
+            tapAnimation()
         }
         
         // if is in game -----------------------------------------
-        tapIcon.run(SKAction.fadeAlpha(to: 1, duration: 0.2)) {
-            self.tapIcon.run(SKAction.fadeAlpha(to: 0.4, duration: 0.2))
-        }
+        
         
     }
     
@@ -119,8 +150,8 @@ class GameScene: SKScene {
 
 
 // Load the SKScene from 'GameScene.sks'
-let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 500, height: 500))
-let scene = GameScene(size: CGSize(width: 500, height: 500))
+let sceneView = SKView(frame: CGRect(x:0 , y:0, width: 700, height: 500))
+let scene = GameScene(size: CGSize(width: 700, height: 500))
 scene.scaleMode = .aspectFill
 scene.backgroundColor = SKColor.white
 sceneView.presentScene(scene)
